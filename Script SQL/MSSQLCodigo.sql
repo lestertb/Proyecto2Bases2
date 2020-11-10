@@ -1,4 +1,4 @@
---Código para el Monitor de privilegios
+--Cï¿½digo para el Monitor de privilegios
 
 --Procedure retorna tablas de la base de datos usando
 CREATE OR ALTER PROCEDURE getTables
@@ -52,22 +52,44 @@ CREATE OR ALTER PROCEDURE getIndixes
 	@nameTable VARCHAR(50)
 AS
 	BEGIN
-		SELECT s.name AS schemaName, t.name AS tableName, i.name AS indexName, c.name AS columnName 
+		SELECT s.name AS schemaName, t.name AS tableName, i.name AS indexName, c.name AS columnName
 		FROM sys.tables t
 		INNER JOIN sys.schemas s on t.schema_id = s.schema_id
 		INNER JOIN sys.indexes i on i.object_id = t.object_id
 		INNER JOIN sys.index_columns ic on ic.object_id = t.object_id
-		INNER JOIN sys.columns c on c.object_id = t.object_id 
-		AND ic.column_id = c.column_id 
+		INNER JOIN sys.columns c on c.object_id = t.object_id
+		AND ic.column_id = c.column_id
 		WHERE t.name = @nameTable
 	END
 GO
 
 --EXEC getIndixes personas
-	
+
 /*
 SET SHOWPLAN_XML OFF
 
 select * from usuarios FOR JSON PATH
 
 */
+
+
+
+
+--------CÃ³digo para usar en python--------
+
+--Retorna tablas de la base de datos usando
+GO
+SELECT DISTINCT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES
+
+
+--Retorna privilegios de una tabla especifica.
+GO
+EXEC sp_table_privileges @nameTable
+
+--Retorna los atributos de una tabla
+GO
+SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = @nameTable;
+
+--Retorna privilegios de una columna especifica.
+GO
+EXEC sp_column_privileges @nameTable, NULL, NULL, @nameColumn
