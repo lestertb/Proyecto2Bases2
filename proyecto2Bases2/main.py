@@ -24,18 +24,34 @@ def main():
     root = Tk()
     root.geometry("800x600")
     root.title("Segundo Proyecto bases 2")
-    e = Entry(root, width=50)
-    e.grid(column=3, columnspan=3, padx=10, pady=10)
-    e.insert(0, "LESTERTB\SQLEXPRESS")
-    e2 = Entry(root, width=50)
-    e2.grid(row=1, column=3, columnspan=3, padx=10, pady=10)
-    e2.insert(0, "test_DB")
-    e3 = Entry(root, width=50)
-    e3.grid(row=2, column=3, columnspan=3, padx=10, pady=10)
+    labelConexion = Label(root, text="Conexion a la base de datos")
+    labelConexion.place(x=200, y=15)
+    labelConexion.config(font=("Courier", 14))
+    e = Entry(root, width=25)
+    e.place(x=300, y=50)
+    e.insert(0, "MARCO\SQLEXPRESS")
+    labelServidor = Label(root, text="Nombre del servidor")
+    labelServidor.place(x=125, y=50)
+
+    e2 = Entry(root, width=25)
+    e2.place(x=300, y=90)
+    e2.insert(0, "coronavirus")
+    labelBD = Label(root, text="Nombre de la base de datos")
+    labelBD.place(x=125, y=90)
+
+    e3 = Entry(root, width=25)
+    e3.place(x=300, y=130)
     e3.insert(0, "ClaseDB")
-    e4 = Entry(root, width=50)
-    e4.grid(row=3, column=3, columnspan=3, padx=10, pady=10)
-    e4.insert(0, "1234")
+
+    labelUser = Label(root, text="Nombre de usuario")
+    labelUser.place(x=125, y=130)
+
+    e4 = Entry(root, width=25)
+    e4.place(x=300, y=170)
+    e4.insert(0, "12345")
+    labelContra = Label(root, text="Contraseña")
+    labelContra.place(x=125, y=170)
+
     servers = Entry.get(e)
     databases = Entry.get(e2)
     usernames = Entry.get(e3)
@@ -58,74 +74,132 @@ def main():
             main()
 
     boton = Button(root, text="Probar conexion", command=mycclick)
-    boton.grid(row=4, column=3)
+    boton.place(x=300, y=210)
     root.mainloop()
 
 
 def ventanaDespues(conn):
     # Globals
     newroot = Tk()
-    newroot.geometry("800x600")
+    newroot.geometry("1500x800")
     newroot.title("Segundo Proyecto bases 2")
-
-
-    nombreVariable = Text(newroot)
-    nombreVariable.config(width=25, height=10, padx=25, pady=15)
-    nombreVariable.place(x=50, y=100)  # ubicacion en x y y
+    labelMonitor = Label(newroot, text="Monitor de privilegios")
+    labelMonitor.place(x=150, y=20)
+    labelMonitor.config(width=50)
+    labelMonitor.config(font=("Courier", 24))
+    textoCentral = Text(newroot)
+    textoCentral.config(width=120, height=30, padx=25, pady=15)
+    textoCentral.place(x=50, y=150)  # ubicacion en x y y
 
     def getSchemas():
         cur = conn.cursor()
-        # cur.execute("SELECT DISTINCT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES where TABLE_TYPE = 'BASE TABLE'")
         cur.execute("SELECT DISTINCT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA ")
         data = []
         for tabla_list in cur.fetchall():
             data.append(tabla_list[0])
         return data
 
-
     label = Label(newroot, text="Seleccione el esquema al cual pertenece la tabla")
-    label.grid(row=1, column=0)
-    comboBoxSchemas = ttk.Combobox(newroot, width="20", values= getSchemas())
-    comboBoxSchemas.place(x=25, y=25)
+    label.place(x=50, y=60)
+    comboBoxSchemas = ttk.Combobox(newroot, width="20", values=getSchemas())
+    comboBoxSchemas.place(x=50, y=95)
     comboBoxTables = ttk.Combobox(newroot, width=40)
+    comboBoxAttributes = ttk.Combobox(newroot, width=40)
 
     def callback(eventObject):
         comboBoxTables.set('')
         resultado()
 
-    comboBoxSchemas.bind("<<ComboboxSelected>>", callback)
+    def callback2(eventObject):
+        comboBoxAttributes.set('')
+        llenarComboBoxAtributos()
 
+    comboBoxSchemas.bind("<<ComboboxSelected>>", callback)
+    comboBoxTables.bind("<<ComboboxSelected>>", callback2)
     def resultado():
         if comboBoxSchemas.get() != '':
-            nombreVariable.delete('1.0', END)
+            textoCentral.delete('1.0', END)
             comboBoxTables["values"] = llenarComboBoxTablas(comboBoxSchemas.get())
-            comboBoxTables.place(x=200, y=70)
+            comboBoxTables.place(x=1200, y=150)
+            labelTablas = Label(newroot, text="Seleccione la tabla con la que quiere trabajar")
+            labelTablas.place(x=1200, y=125)
             privilegiosTabla(comboBoxTables.get())
+
         else:
             tkinter.messagebox.showinfo(title="Advertencia", message="Debe elegir un schema")
 
     def llenarComboBoxTablas(valSchema):
         cur = conn.cursor()
         cur.execute(
-            '''SELECT DISTINCT [TABLE_NAME] FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? and TABLE_TYPE = 'BASE TABLE' ''',valSchema)
+            '''SELECT DISTINCT [TABLE_NAME] FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? and TABLE_TYPE = 'BASE TABLE' ''',
+            valSchema)
         data = []
         for val in cur.fetchall():
             data.append(val[0])
         return data
 
-
     def privilegiosTabla(valTable):
         if valTable != '':
-            testString = "sp_table_privileges "+ valTable
+            testString = "sp_table_privileges " + valTable
             cur = conn.cursor()
-            rows = cur.execute(testString).fetchall()
-            nombreVariable.insert(END, rows)
+            cur.execute(testString)
+            for rows in cur:
+                info = "TABLE_QUALIFER" + " " + rows[0] + " " + "TABLE_NAME" + " " + rows[2] + " " + \
+                       "Privilige" + " " + rows[5]
+                info += '\n'
+                info += '\n'
+                textoCentral.insert(END, info)
+            # labelAtributos = Label(newroot, text="Seleccione el atributo con el que quiere trabajar")
+            # labelAtributos.place(x=1200, y=230)
+            # comboBoxAttributes["values"] = llenarComboAtributos(valTable)
+            # comboBoxAttributes.place(x=1200, y=250)
         else:
             tkinter.messagebox.showinfo(title="Advertencia", message="Debe elegir una tabla")
 
+    def llenarComboAtributos(tabla):
+        cur = conn.cursor()
+        cur.execute(
+            '''SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? ''',
+            tabla)
+        data = []
+        for val in cur.fetchall():
+            data.append(val[0])
+        return data
+
+    def atributosTabla():
+        if comboBoxTables.get() != '' and comboBoxAttributes.get() != '':
+            textoCentral.delete('1.0', END)
+            verAtributosText(comboBoxTables.get(), comboBoxAttributes.get())
+        else:
+            tkinter.messagebox.showinfo(title="Advertencia", message="Debe elegir una tabla y un atributo")
+
+    def verAtributosText(valTable, column):
+        if valTable != '' and column != '':
+            string = "sp_column_privileges " + valTable + " ,NULL " + " ,NULL " + ',' + column
+            cur = conn.cursor()
+            cur.execute(string)
+            for rows in cur:
+                string1 = "TABLE_QUALIFER =" + " " + rows[0] + " - " + "TABLE_NAME =" + " " + rows[2] + " - " \
+                          + "COLUMN_NAME =" + " " + rows[3] + " - " + \
+                          "Privilige =" + " " + rows[6]
+                string1 += '\n'
+                string1 += '\n'
+                textoCentral.insert(END, string1)
+
+        else:
+            tkinter.messagebox.showinfo(title="Advertencia", message="Debe elegir una tabla y un atributo")
+
+    def llenarComboBoxAtributos():
+
+        labelAtributos = Label(newroot, text="Seleccione el atributo con el que quiere trabajar")
+        labelAtributos.place(x=1200, y=230)
+        comboBoxAttributes["values"] = llenarComboAtributos(comboBoxTables.get())
+        comboBoxAttributes.place(x=1200, y=250)
 
     boton1 = Button(newroot, text="Ver privilegios de la tabla", command=resultado)
-    boton1.grid(row=4, column=3)
+    boton1.place(x=1200, y=180)
+    boton2 = Button(newroot, text="Ver privilegios de los atributos en la tabla seleccionada", command=atributosTabla)
+    boton2.place(x=1200, y=280)
 
     newroot.mainloop()
 
