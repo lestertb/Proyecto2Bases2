@@ -74,6 +74,28 @@ GO
 
 --------Código para usar en python (Plan de ejecusión)--------
 
+--Este solo crea un link para mostrar el plan de ejecución en el Management
+SET SHOWPLAN_XML OFF --(Plan estimado)
+GO
+
+--Este rea un link para mostrar el plan de ejecución en el Management junto a los valores de la tabla consultada
+SET STATISTICS XML OFF --(Plan Real ó Actual)
+GO
+
+--Este muestra toda la información del plan de ejecución en formato consulta
+SET SHOWPLAN_ALL OFF --(Algunos datos del plan estimado)
+GO
+
+--Este muestra toda la información del plan de ejecución en formato consulta y además la info de la tabla consultada o de lo que se consulte
+SET STATISTICS PROFILE OFF --(Algunos datos del plan estimado, pero también retorna el resultado de la consulta)
+GO
+
+
+SELECT * FROM personas
+GO
+
+
+--Manejo de índices
 --Procedure retorna indices
 GO
 CREATE OR ALTER PROCEDURE getIndixes
@@ -91,27 +113,4 @@ AS
 	END
 GO
 
---EXEC getIndixes usuarios
-
---Este solo crea un link para mostrar el plan de ejecución en el Management
-SET SHOWPLAN_XML OFF --(Plan estimado)
-GO
-
---Este rea un link para mostrar el plan de ejecución en el Management junto a los valores de la tabla consultada
-SET STATISTICS XML OFF --(Plan Real ó Actual)
-GO
-
---Este muestra toda la información del plan de ejecución en formato consulta
-SET SHOWPLAN_ALL ON --(Algunos datos del plan estimado)
-GO
-
---Este muestra toda la información del plan de ejecución en formato consulta y además la info de la tabla consultada o de lo que se consulte
-SET STATISTICS PROFILE OFF --(Algunos datos del plan estimado, pero también retorna el resultado de la consulta)
-GO
-
-
-SELECT * FROM usuarios
-GO
-
-
-
+--EXEC getIndixes personas
