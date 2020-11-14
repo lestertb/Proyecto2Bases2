@@ -46,8 +46,36 @@ GO
 --EXEC getPrivilegesTablesXColumn personas, nombre
 
 
---Procedure retorna indices
 
+
+
+--------Código para usar en python (Monitor)--------
+
+--Retorna tablas de la base de datos usando
+--GO
+--SELECT DISTINCT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES
+
+
+--Retorna privilegios de una tabla especifica.
+--GO
+--EXEC sp_table_privileges @nameTable
+
+
+--Retorna los atributos de una tabla
+--GO
+--SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = @nameTable;
+
+
+--Retorna privilegios de una columna especifica.
+--GO
+--EXEC sp_column_privileges @nameTable, NULL, NULL, @nameColumn
+
+
+
+--------Código para usar en python (Plan de ejecusión)--------
+
+--Procedure retorna indices
+GO
 CREATE OR ALTER PROCEDURE getIndixes
 	@nameTable VARCHAR(50)
 AS
@@ -63,33 +91,27 @@ AS
 	END
 GO
 
---EXEC getIndixes personas
+--EXEC getIndixes usuarios
 
-/*
-SET SHOWPLAN_XML OFF
-
-select * from usuarios FOR JSON PATH
-
-*/
-
-
-
-
---------Código para usar en python--------
-
---Retorna tablas de la base de datos usando
+--Este solo crea un link para mostrar el plan de ejecución en el Management
+SET SHOWPLAN_XML OFF --(Plan estimado)
 GO
-SELECT DISTINCT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES
 
-
---Retorna privilegios de una tabla especifica.
+--Este rea un link para mostrar el plan de ejecución en el Management junto a los valores de la tabla consultada
+SET STATISTICS XML OFF --(Plan Real ó Actual)
 GO
-EXEC sp_table_privileges @nameTable
 
---Retorna los atributos de una tabla
+--Este muestra toda la información del plan de ejecución en formato consulta
+SET SHOWPLAN_ALL ON --(Algunos datos del plan estimado)
 GO
-SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = @nameTable;
 
---Retorna privilegios de una columna especifica.
+--Este muestra toda la información del plan de ejecución en formato consulta y además la info de la tabla consultada o de lo que se consulte
+SET STATISTICS PROFILE OFF --(Algunos datos del plan estimado, pero también retorna el resultado de la consulta)
 GO
-EXEC sp_column_privileges @nameTable, NULL, NULL, @nameColumn
+
+
+SELECT * FROM usuarios
+GO
+
+
+
