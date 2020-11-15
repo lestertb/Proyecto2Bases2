@@ -10,3 +10,4 @@ def get_connection(server, database, username, password):
         return connection
     except pyodbc.Error as err:
         return None
+
