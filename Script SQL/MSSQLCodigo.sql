@@ -79,7 +79,7 @@ SET SHOWPLAN_XML OFF --(Plan estimado)
 GO
 
 --Este rea un link para mostrar el plan de ejecución en el Management junto a los valores de la tabla consultada
-SET STATISTICS XML ON --(Plan Real ó Actual)
+SET STATISTICS XML OFF --(Plan Real ó Actual)
 GO
 
 --Este muestra toda la información del plan de ejecución en formato consulta
@@ -98,62 +98,49 @@ GO
 --Manejo de índices
 
 --Procedure retorna indices
-GO
-CREATE OR ALTER PROCEDURE getIndixes
-	@nameTable VARCHAR(50)
-AS
-	BEGIN
-		SELECT  Tab.name  Table_Name 
-			 ,IX.name  Index_Name
-			 ,IX.type_desc Index_Type
-			 ,Col.name  Index_Column_Name
-			 ,IXC.is_included_column Is_Included_Column
-			 ,IX.fill_factor 
-			 ,IX.is_disabled
-			 ,IX.is_primary_key
-			 ,IX.is_unique
-			 		  
-           FROM  sys.indexes IX 
-           INNER JOIN sys.index_columns IXC  ON  IX.object_id   =   IXC.object_id AND  IX.index_id  =  IXC.index_id  
-           INNER JOIN sys.columns Col   ON  IX.object_id   =   Col.object_id  AND IXC.column_id  =   Col.column_id     
-           INNER JOIN sys.tables Tab      ON  IX.object_id = Tab.object_id 
-		   WHERE Tab.name = 'personas'
-	END
+
+EXEC sp_helpindex 'personas'
 GO
 
---EXEC getIndixes personas
-
---Muestra todos los índices utilizados desde que inicio el servidor, ordenados primero los más recientes.
-SELECT OBJECT_NAME(IX.OBJECT_ID) Table_Name
-	   ,IX.name AS Index_Name
-	   ,IX.type_desc Index_Type
-	   ,SUM(PS.[used_page_count]) * 8 IndexSizeKB
-	   ,IXUS.user_seeks AS NumOfSeeks
-	   ,IXUS.user_scans AS NumOfScans
-	   ,IXUS.user_lookups AS NumOfLookups
-	   ,IXUS.user_updates AS NumOfUpdates
-	   ,IXUS.last_user_seek AS LastSeek
-	   ,IXUS.last_user_scan AS LastScan
-	   ,IXUS.last_user_lookup AS LastLookup
-	   ,IXUS.last_user_update AS LastUpdate
-FROM sys.indexes IX
-INNER JOIN sys.dm_db_index_usage_stats IXUS ON IXUS.index_id = IX.index_id AND IXUS.OBJECT_ID = IX.OBJECT_ID
-INNER JOIN sys.dm_db_partition_stats PS on PS.object_id=IX.object_id
-WHERE OBJECTPROPERTY(IX.OBJECT_ID,'IsUserTable') = 1
-GROUP BY OBJECT_NAME(IX.OBJECT_ID) ,IX.name ,IX.type_desc ,IXUS.user_seeks ,IXUS.user_scans ,IXUS.user_lookups,IXUS.user_updates ,IXUS.last_user_seek ,IXUS.last_user_scan ,IXUS.last_user_lookup ,IXUS.last_user_update
-ORDER BY IXUS.last_user_scan DESC
+--Obtiene todos los índices de una tabla y de las vistas
+SELECT
+ name AS Index_Name,
+ type_desc  As Index_Type,
+ is_unique,
+ OBJECT_NAME(object_id) As Table_Name
+FROM
+ sys.indexes
+WHERE
+ is_hypothetical = 0 AND
+ index_id != 0 AND
+ object_id = OBJECT_ID('view_Persona');
+GO
 
 
+CREATE OR ALTER VIEW dbo.view_Persona
+WITH SCHEMABINDING
+AS   
+    SELECT idPersona, nombre, edad, cedula
+	FROM dbo.personas
+GO
 
-SELECT * FROM usuarios
+CREATE UNIQUE CLUSTERED INDEX IX_view_Persona
+ON dbo.view_Persona
+(
+     cedula ASC
+)
+
+select * from view_Persona
+
+select * from personas
+
+select * from usuarios
 
 GO
 
 --SELECT * FROM testSinPK
 
-
-
-SELECT * FROM personas WITH (INDEX(IX_Eada_Personas))
+SELECT * FROM personas WITH (INDEX(IX_Edad_Personas))
 
 --Indice 
 
