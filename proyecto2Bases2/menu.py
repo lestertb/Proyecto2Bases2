@@ -15,14 +15,12 @@ def menu(conn):
 
     def monitorAction():
         tablePrivileges.tablePrivileges(conn)
-        selectionFrame.destroy()
-        root.destroy()
+
 
 
     def planAction():
         executionPlan.execution_plan(conn)
-        selectionFrame.destroy()
-        root.destroy()
+
 
 
     monitor = tk.PhotoImage(file="monitor.png")

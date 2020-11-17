@@ -19,7 +19,7 @@ def execution_plan(conn):
     cLabel.grid(row=0, column=0, padx=10, pady=10)
     comboBoxTypes = ttk.Combobox(queryFrame, width="20", values=["Detallado/Estimado","Detallado/Actual","Simple"],justify='center',font='Courier 12')
     comboBoxTypes.grid(row=0, column=1, padx=10, pady=10)
-
+    comboBoxTypes.current(0)
 
     queryLabel = tk.Label(queryFrame, text="SQl Query: ",font='Courier 12')
     queryLabel.grid(row=1, column=0, padx=10, pady=10)
@@ -58,33 +58,44 @@ def execution_plan(conn):
             queryConfig2 = "SET SHOWPLAN_XML OFF"
 
         try:
-            res = conn.cursor()
-            #res.execute(queryConfig1)
-            #res.execute(queryConfig2)
 
+            res = conn.cursor()
+            res.execute(queryConfig1)
+            res.execute(queryConfig2)
             res.execute(queryConfig)
             res.execute(query)
-
             xmlHelper = ""
+
             if (comboBoxTypes.current() == 0):
                 resultSet = res.fetchone()
                 xmlHelper = '<root>' + resultSet[0] + '</root>'
             elif (comboBoxTypes.current() == 1):
-                resultSet = res.fetchall()
-                print(list(res))
+                res.nextset()
+                resultSet = res.fetchone()
+                xmlHelper = '<root>' + resultSet[0] + '</root>'
 
-                #xmlHelper = '<root>' + resultSet[1] + '</root>'
 
-            dictionary = xmltodict.parse(xmlHelper)
-            print(dictionary)
-            json_convert = json.dumps(dictionary)
-            print(json_convert)
+
+            json_convert = ""
+            if(comboBoxTypes.current()<2):
+                dictionary = xmltodict.parse(xmlHelper)
+                json_convert = json.dumps(dictionary)
+            if (comboBoxTypes.current() == 2):
+                dictionary = res.fetchall()
+                acc = []
+                for x in dictionary:
+                    split = x[0].split(",")
+                    for e in split:
+                        acc.append(e)
+                print(acc)
+                json_convert = json.dumps(acc)
+                print(acc)
             file = open(r"treeView.json", "wt")
             file.write(json_convert)
             file.close()
             os.system("python3 json_viewer.py treeView.json")
-
             return json_convert
+
         except pyodbc.Error as err:
             tk.messagebox.showerror(title="Error", message=err)
 
