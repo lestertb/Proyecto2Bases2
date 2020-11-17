@@ -157,18 +157,10 @@ def tablePrivileges(conn):
         except AttributeError as err:
             tkinter.messagebox.showerror(title="Error", message=err)
 
-    def regresar():
-        newroot.destroy()
-        return menu.menu(conn)
-
     boton1 = Button(newroot, text="Ver privilegios de la tabla", command=resultado)
     boton1.place(x=1200, y=180)
     boton2 = Button(newroot, text="Ver privilegios de los atributos en la tabla seleccionada", command=atributosTabla)
     boton2.place(x=1200, y=280)
-
-    boton2 = Button(newroot, text="Regresar Login", command=regresar)
-    boton2.place(x=1200, y=380)
-
 
 
     newroot.mainloop()
