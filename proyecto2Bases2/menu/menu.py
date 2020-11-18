@@ -1,6 +1,6 @@
 import tkinter as tk
-from proyecto2Bases2 import tablePrivileges
-from proyecto2Bases2 import  executionPlan
+from functions import tablePrivileges
+from functions import executionPlan
 
 def menu(conn):
     root = tk.Tk()
@@ -23,12 +23,12 @@ def menu(conn):
 
 
 
-    monitor = tk.PhotoImage(file="monitor.png")
+    monitor = tk.PhotoImage(file="resources/monitor.png")
     monitor = monitor.subsample(1, 1)
     monitorButton = tk.Button(selectionFrame, text='Monitor de permisos', command = monitorAction, image=monitor)
     monitorButton.pack(pady=5,padx = 10 , side = "left")
 
-    plan = tk.PhotoImage(file="plan.png")
+    plan = tk.PhotoImage(file="resources/plan.png")
     plan = plan.subsample(1, 1)
     planButton = tk.Button(selectionFrame, text='Plan de ejecucion', command = planAction, image=plan)
     planButton.pack(pady=5,padx = 10, side="left")

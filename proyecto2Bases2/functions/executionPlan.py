@@ -95,10 +95,10 @@ def execution_plan(conn):
                     for e in split:
                         acc.append(e)
                 json_convert = json.dumps(acc)
-            file = open(r"treeView.json", "wt")
+            file = open(r"functions/treeView.json", "wt")
             file.write(json_convert)
             file.close()
-            os.system("python3 json_viewer.py treeView.json")
+            os.system("python functions/json_viewer.py functions/treeView.json")
             return json_convert
 
         except pyodbc.Error as err:

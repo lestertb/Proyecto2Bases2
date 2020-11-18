@@ -2,7 +2,7 @@ import tkinter
 from tkinter import messagebox, ttk
 import pyodbc
 from tkinter import *
-from proyecto2Bases2 import menu
+from menu import menu
 
 def main():
     root = Tk()
@@ -11,7 +11,7 @@ def main():
 
     canvas = Canvas(root, width=400, height=200)
     canvas.pack(anchor="center")
-    img = PhotoImage(file="logo-tec.png")
+    img = PhotoImage(file="resources/logo-tec.png")
     canvas.create_image(210, 140, anchor="center", image=img)
 
 

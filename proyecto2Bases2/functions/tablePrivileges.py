@@ -2,18 +2,8 @@ import tkinter
 from tkinter import messagebox, ttk
 import pyodbc
 from tkinter import *
-from proyecto2Bases2 import menu
-
-# Some other example server values are
-# server = 'localhost\sqlexpress' # for a named instance
-# server = 'myserver,port' # to specify an alternate port
 
 
-
-# cursor = cnxn.cursor()
-# cursor.execute("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'pais'")
-# for row in cursor:
-#   print(row)
 
 def tablePrivileges(conn):
     # Globals
