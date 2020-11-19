@@ -40,6 +40,8 @@ def tablePrivileges(conn):
         try:
             comboBoxTables.set('')
             resultado()
+            comboBoxAttributes.set('')
+            llenarComboBoxAtributos()
         except RuntimeError as err:
             tkinter.messagebox.showerror(title="Error", message=err)
 
@@ -111,19 +113,20 @@ def tablePrivileges(conn):
             tkinter.messagebox.showerror(title="Error", message=err)
 
     def atributosTabla():
+
         try:
             if comboBoxTables.get() != '' and comboBoxAttributes.get() != '':
                 textoCentral.delete('1.0', END)
-                verAtributosText(comboBoxTables.get(), comboBoxAttributes.get())
+                verAtributosText(comboBoxTables.get(),comboBoxSchemas.get(), comboBoxAttributes.get())
             else:
                 tkinter.messagebox.showinfo(title="Advertencia", message="Debe elegir una tabla y un atributo")
         except AttributeError as err:
             tkinter.messagebox.showerror(title="Error", message=err)
 
-    def verAtributosText(valTable, column):
+    def verAtributosText(valTable,esquema, column):
         if valTable != '' and column != '':
             try:
-                string = "sp_column_privileges " + valTable + " ,NULL " + " ,NULL " + ',' + column
+                string = "sp_column_privileges " + valTable + ", "+ esquema + " ,NULL " + ',' + column
                 cur = conn.cursor()
                 cur.execute(string)
                 for rows in cur:
