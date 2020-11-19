@@ -145,7 +145,6 @@ def execution_plan(conn):
             dictionary = res.fetchall()
             list_ = []
             for x in dictionary:
-                print(x)
                 stringBuilder = str(x)
                 encountered = re.findall("OBJECT:\(\[.*?\]\.\[.*?\]\.\[.*?\]\.\[.*?\]\)", stringBuilder)
                 list_ = list_ + encountered
