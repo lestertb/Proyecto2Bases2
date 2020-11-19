@@ -123,9 +123,11 @@ def execution_plan(conn):
             dictionary = res.fetchall()
             list_ = []
             for x in dictionary:
+                print(x)
                 stringBuilder = str(x)
-                list_ = re.findall("\[.*?\]\.\[.*?\]\.\[.*?\]\.\[.*?\]", stringBuilder)
-            filteredList = list(set(list_))
+                encountered = re.findall("OBJECT:\(\[.*?\]\.\[.*?\]\.\[.*?\]\.\[.*?\]\)", stringBuilder)
+                list_ = list_ + encountered
+            filteredList = (list(set(list_)))
             textResult.insert(tk.END,"Index usados:\n")
             for y in filteredList:
                 splitedE = y.split(".")
@@ -133,15 +135,15 @@ def execution_plan(conn):
                 treated = treated.replace("]", "")
                 textResult.insert(tk.END, "   ->"+treated + "\n")
 
-
             param = queryEntry.get("1.0", 'end-1c')
+
             if(re.search("FROM",param)):
                 param = param.split("FROM")
             else:
                 param = param.split("from")
+            param = param[1].split(" ")
             val = param[1].replace(" ","")
             val = val.replace(";","")
-
             query = "SELECT name AS Index_Name,type_desc  As Index_Type,is_unique,OBJECT_NAME(object_id) As Table_Name FROM sys.indexes WHERE is_hypothetical = 0 AND index_id != 0 AND object_id = OBJECT_ID('"+val+"');"
             queryConfig = "SET SHOWPLAN_ALL OFF"
             res.execute(queryConfig)
