@@ -1,10 +1,14 @@
+#Selected GUI libs to build graphical interface
 import tkinter
+#messagebox and ttk are typical of this library
 from tkinter import messagebox, ttk
+#This library was chosen because the wide information that is spread in internet, its
+#very popular between developers.It serves to make connections to differents database engines
 import pyodbc
 from tkinter import *
 
 
-#Main function, priviliegies monitor
+# Main function, priviliegies monitor
 def tablePrivileges(conn):
     # Globals
     newroot = Tk()
@@ -17,7 +21,8 @@ def tablePrivileges(conn):
     textoCentral = Text(newroot)
     textoCentral.config(width=120, height=30, padx=25, pady=15)
     textoCentral.place(x=50, y=150)  # ubicacion en x y y
-#This function gets all schemas in the connected database
+
+    # This function gets all schemas in the connected database
     def getSchemas():
         try:
             cur = conn.cursor()
@@ -35,7 +40,8 @@ def tablePrivileges(conn):
     comboBoxSchemas.place(x=50, y=95)
     comboBoxTables = ttk.Combobox(newroot, width=40)
     comboBoxAttributes = ttk.Combobox(newroot, width=40)
-    #Clear combobox
+
+    # Clear combobox
     def callback(eventObject):
         try:
             comboBoxTables.set('')
@@ -55,7 +61,8 @@ def tablePrivileges(conn):
 
     comboBoxSchemas.bind("<<ComboboxSelected>>", callback)
     comboBoxTables.bind("<<ComboboxSelected>>", callback2)
-    #This function fills the tables combobox by the chosen schema
+
+    # This function fills the tables combobox by the chosen schema
     def resultado():
         try:
             if comboBoxSchemas.get() != '':
@@ -69,7 +76,8 @@ def tablePrivileges(conn):
                 tkinter.messagebox.showinfo(title="Advertencia", message="Debe elegir un schema")
         except AttributeError as err:
             tkinter.messagebox.showerror(title="Error", message=err)
-#This function uses the schema selected for creating a combobox with its tables
+
+    # This function uses the schema selected for creating a combobox with its tables
     def llenarComboBoxTablas(valSchema):
         try:
             cur = conn.cursor()
@@ -82,7 +90,8 @@ def tablePrivileges(conn):
             return data
         except pyodbc.Error as err:
             tkinter.messagebox.showerror(title="Error", message=err)
-#This function gets the priviligies of the selected table
+
+    # This function gets the priviligies of the selected table
     def privilegiosTabla(valTable):
         if valTable != '':
             try:
@@ -99,7 +108,8 @@ def tablePrivileges(conn):
                 tkinter.messagebox.showerror(title="Error", message=err)
         else:
             tkinter.messagebox.showinfo(title="Advertencia", message="Debe elegir una tabla")
-#This function fills the attributes combobox
+
+    # This function fills the attributes combobox
     def llenarComboAtributos(tabla):
         try:
             cur = conn.cursor()
@@ -112,21 +122,23 @@ def tablePrivileges(conn):
             return data
         except pyodbc.Error as err:
             tkinter.messagebox.showerror(title="Error", message=err)
-#This function calls for another function in which it displays the attributes for a selected table
+
+    # This function calls for another function in which it displays the attributes for a selected table
     def atributosTabla():
         try:
             if comboBoxTables.get() != '' and comboBoxAttributes.get() != '':
                 textoCentral.delete('1.0', END)
-                verAtributosText(comboBoxTables.get(),comboBoxSchemas.get(), comboBoxAttributes.get())
+                verAtributosText(comboBoxTables.get(), comboBoxSchemas.get(), comboBoxAttributes.get())
             else:
                 tkinter.messagebox.showinfo(title="Advertencia", message="Debe elegir una tabla y un atributo")
         except AttributeError as err:
             tkinter.messagebox.showerror(title="Error", message=err)
-#This function displays the attributes for a selected table
-    def verAtributosText(valTable,esquema, column):
+
+    # This function displays the attributes for a selected table
+    def verAtributosText(valTable, esquema, column):
         if valTable != '' and column != '':
             try:
-                string = "sp_column_privileges " + valTable + ", "+ esquema + " ,NULL " + ',' + column
+                string = "sp_column_privileges " + valTable + ", " + esquema + " ,NULL " + ',' + column
                 cur = conn.cursor()
                 cur.execute(string)
                 for rows in cur:
@@ -140,7 +152,8 @@ def tablePrivileges(conn):
                 tkinter.messagebox.showerror(title="Error", message=err)
         else:
             tkinter.messagebox.showinfo(title="Advertencia", message="Debe elegir una tabla y un atributo")
-#This function fullfills the attributes combobox
+
+    # This function fulfills the attributes combobox
     def llenarComboBoxAtributos():
         try:
             labelAtributos = Label(newroot, text="Seleccione el atributo con el que quiere trabajar")
@@ -155,7 +168,4 @@ def tablePrivileges(conn):
     boton2 = Button(newroot, text="Ver privilegios de los atributos en la tabla seleccionada", command=atributosTabla)
     boton2.place(x=1200, y=280)
 
-
     newroot.mainloop()
-
-

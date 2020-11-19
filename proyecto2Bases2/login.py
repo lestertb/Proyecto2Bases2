@@ -1,9 +1,15 @@
+#Selected GUI libs to build graphical interface
 import tkinter
-from tkinter import messagebox, ttk
+#messagebox is typical of this library
+from tkinter import messagebox
+#This library was chosen because the wide information that is spread in internet, its
+#very popular between developers.It serves to make connections to differents database engines
 import pyodbc
 from tkinter import *
 from menu import menu
 
+
+#This function creates the login window for the project
 def main():
     root = Tk()
     root.geometry("600x800")
@@ -45,11 +51,11 @@ def main():
 
 
 
-
+#This function makes the connection to the database using Pyodbc
     def connexion(server, database, username, password):
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' + server + ';DATABASE=' + database + ';UID=' + username + ';PWD=' + password)
         return conn
-
+#Function to go to the selection menu
     def myclick():
         if e.get() != '' or e2.get() != '' or e3.get() != '' or e4.get() != '':
             try:
@@ -72,7 +78,7 @@ def main():
 
         else:
             tkinter.messagebox.showerror(title="Advertencia", message="Campos vacios")
-
+#Exit the application
     def salir():
         root.destroy()
 
