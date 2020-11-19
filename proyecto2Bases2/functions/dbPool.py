@@ -1,6 +1,6 @@
 import pyodbc
 
-
+#This function makes the connection to a SQL SERVER database
 def get_connection(server, database, username, password):
     try:
         connection = pyodbc.connect('DRIVER={SQL Server};SERVER=' + server +

@@ -4,7 +4,7 @@ import pyodbc
 from tkinter import *
 
 
-
+#Main function, priviliegies monitor
 def tablePrivileges(conn):
     # Globals
     newroot = Tk()
@@ -17,7 +17,7 @@ def tablePrivileges(conn):
     textoCentral = Text(newroot)
     textoCentral.config(width=120, height=30, padx=25, pady=15)
     textoCentral.place(x=50, y=150)  # ubicacion en x y y
-
+#This function gets all schemas in the connected database
     def getSchemas():
         try:
             cur = conn.cursor()
@@ -35,7 +35,7 @@ def tablePrivileges(conn):
     comboBoxSchemas.place(x=50, y=95)
     comboBoxTables = ttk.Combobox(newroot, width=40)
     comboBoxAttributes = ttk.Combobox(newroot, width=40)
-
+    #Clear combobox
     def callback(eventObject):
         try:
             comboBoxTables.set('')
@@ -45,6 +45,7 @@ def tablePrivileges(conn):
         except RuntimeError as err:
             tkinter.messagebox.showerror(title="Error", message=err)
 
+    # Clear combobox
     def callback2(eventObject):
         try:
             comboBoxAttributes.set('')
@@ -54,7 +55,7 @@ def tablePrivileges(conn):
 
     comboBoxSchemas.bind("<<ComboboxSelected>>", callback)
     comboBoxTables.bind("<<ComboboxSelected>>", callback2)
-
+    #This function fills the tables combobox by the chosen schema
     def resultado():
         try:
             if comboBoxSchemas.get() != '':
@@ -68,7 +69,7 @@ def tablePrivileges(conn):
                 tkinter.messagebox.showinfo(title="Advertencia", message="Debe elegir un schema")
         except AttributeError as err:
             tkinter.messagebox.showerror(title="Error", message=err)
-
+#This function uses the schema selected for creating a combobox with its tables
     def llenarComboBoxTablas(valSchema):
         try:
             cur = conn.cursor()
@@ -81,7 +82,7 @@ def tablePrivileges(conn):
             return data
         except pyodbc.Error as err:
             tkinter.messagebox.showerror(title="Error", message=err)
-
+#This function gets the priviligies of the selected table
     def privilegiosTabla(valTable):
         if valTable != '':
             try:
@@ -98,7 +99,7 @@ def tablePrivileges(conn):
                 tkinter.messagebox.showerror(title="Error", message=err)
         else:
             tkinter.messagebox.showinfo(title="Advertencia", message="Debe elegir una tabla")
-
+#This function fills the attributes combobox
     def llenarComboAtributos(tabla):
         try:
             cur = conn.cursor()
@@ -111,9 +112,8 @@ def tablePrivileges(conn):
             return data
         except pyodbc.Error as err:
             tkinter.messagebox.showerror(title="Error", message=err)
-
+#This function calls for another function in which it displays the attributes for a selected table
     def atributosTabla():
-
         try:
             if comboBoxTables.get() != '' and comboBoxAttributes.get() != '':
                 textoCentral.delete('1.0', END)
@@ -122,7 +122,7 @@ def tablePrivileges(conn):
                 tkinter.messagebox.showinfo(title="Advertencia", message="Debe elegir una tabla y un atributo")
         except AttributeError as err:
             tkinter.messagebox.showerror(title="Error", message=err)
-
+#This function displays the attributes for a selected table
     def verAtributosText(valTable,esquema, column):
         if valTable != '' and column != '':
             try:
@@ -140,7 +140,7 @@ def tablePrivileges(conn):
                 tkinter.messagebox.showerror(title="Error", message=err)
         else:
             tkinter.messagebox.showinfo(title="Advertencia", message="Debe elegir una tabla y un atributo")
-
+#This function fullfills the attributes combobox
     def llenarComboBoxAtributos():
         try:
             labelAtributos = Label(newroot, text="Seleccione el atributo con el que quiere trabajar")
