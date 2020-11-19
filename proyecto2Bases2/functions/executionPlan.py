@@ -1,10 +1,24 @@
+#Selected GUI libs to build graphical interface
 import tkinter as tk
 from tkinter import ttk,messagebox
+#Used as connector driver between SQL server and Python
 import pyodbc
+#Used to convert XML from SQL server to python dictionary
 import xmltodict
+#Used to convert XML or list, to JSON Struct
 import json
+#Used to call an external python file
 import os
+#Used to call a regular expression library, to evaluate strings
+#https://docs.python.org/3/library/re.html
 import re
+
+#This is the main function, that includes create window to display the sctucture
+#this window contains 2 TextBox, 2 Buttons, and a comboBox to interact with user
+#all the consults may be written in the first TextBox, the second TextBox is only used to show results
+#the consults may be 3 diferent types, estimated, actual and simple
+#and the indexes uses compare the table index vs used by system indexes
+
 def execution_plan(conn):
     root = tk.Tk()
     root.minsize(800, 400)
@@ -46,6 +60,8 @@ def execution_plan(conn):
     scrollb.grid(row=0, column=2, sticky='nsew')
     queryEntry['yscrollcommand'] = scrollb.set
 
+    #This function gets an execution plan from SQL server an the show to user, using an external lib called json_viwer
+    #with this is posible show SQL info into tree_view
     def executeConsult():
         query = queryEntry.get("1.0", 'end-1c')
         queryConfig = ""
@@ -98,12 +114,18 @@ def execution_plan(conn):
             file = open(r"functions/treeView.json", "wt")
             file.write(json_convert)
             file.close()
+            #For Linux
+            #TODO This can cause an error when is used on Linux or Windows
+            #os.system("python functions/json_viewer.py functions/treeView.json")
+            #For windows, python is added to PATH as python
             os.system("python functions/json_viewer.py functions/treeView.json")
             return json_convert
 
         except pyodbc.Error as err:
             tk.messagebox.showerror(title="Error", message=err)
 
+    # This function executes consult to get the execution plan from SQL server, and when the callback comes from server
+    # this refresh the layout an put the data to the final user. This is used to show indexes uses in a consult vs the indexes from table
     def indexesConsult():
         textResult.delete('1.0', tk.END)
 
